@@ -31,9 +31,24 @@ npm run dev
 
 Legacy Streamlit code is still under `app/`.
 
+---
 
+# Phase 2 — Local RAG Experimentation
 
-<<<<<<< HEAD
+This phase focuses on building and experimenting with a local Retrieval-Augmented Generation (RAG) pipeline. The goal is to use the `nomic-embed-text` model for creating text embeddings and FAISS for efficient similarity search.
 
-=======
->>>>>>> fa1bb5b0465252f8db71f4913c8cf6c49b779aff
+## Directory Layout
+
+```text
+phase2/
+├── data/                     # Sample data for the RAG pipeline
+├── notebooks/                # Jupyter notebooks for experimentation
+├── python_code/              # Python scripts for the RAG pipeline
+└── tests/                    # Tests for the RAG pipeline
+```
+
+## Key Components
+
+- **Embedding Model**: `nomic-embed-text` for creating high-quality text embeddings.
+- **Vector Store**: FAISS for efficient storage and retrieval of text embeddings.
+- **RAG Pipeline**: A Python script that demonstrates how to load data, create embeddings, and perform similarity search.

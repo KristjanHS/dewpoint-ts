@@ -52,6 +52,10 @@ cuda-keyring_*.deb
 # google cloud
 google-cloud-sdk/
 
+#####################
+# Phase 2
+#####################
+
 # Large data files, assets, or logs
 .ollama_models/
 data/
@@ -69,7 +73,7 @@ faiss_index/
 vendor/
 third_party/
 
-# secrets
+# secrets / Docker secrets
 secrets/
 secrets.*
 
