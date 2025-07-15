@@ -9,25 +9,8 @@
 		},
 		{
 			// Give each sub-project a descriptive name for clarity in the UI.
-			"path": "backend",
-			"name": "backend"
-		},
-		{
-			"path": "frontend",
-			"name": "frontend"
-		},
-		{
-			"path": "dewpointApp",
-			"name": "dewpointApp"
-		},
-
-		{
-			"path": "data",
-			"name": "data"
-		},
-		{
-			"path": "docker",
-			"name": "docker"
+			"path": "app",
+			"name": "app"
 		}
 	],
 
@@ -38,7 +21,7 @@
 		// --- Python Configuration ---
 		// Set a default Python interpreter for the entire project.
 		// Best practice: Point this to your project's virtual environment.
-		"python.defaultInterpreterPath": "/home/kristjans/projects/kri-local-rag/.venv/bin/python",
+		"python.defaultInterpreterPath": "/home/kristjans/projects/dewpoint-app/.venv/bin/python",
 
 		// --- Editor & Formatting Consistency ---
 		// Ensure all Python files are formatted with the Black Formatter.
