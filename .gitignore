@@ -71,3 +71,16 @@ third_party/
 # secrets
 secrets/
 secrets.*
+
+# Node / Next.js
+node_modules/
+.next/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.env.local
+.env.*
+!.env.example
+!.env.local.example

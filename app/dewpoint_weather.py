@@ -179,7 +179,7 @@ def fetch_weather_by_gps(lat, lon, api_key):
 def reverse_geocode(lat, lon):
     try:
         url = f"https://nominatim.openstreetmap.org/reverse?lat={lat}&lon={lon}&format=json"
-        resp = requests.get(url, headers={"User-Agent": "dewpoint-app/1.0"})
+        resp = requests.get(url, headers={"User-Agent": "dewpoint-ts/1.0"})
         if resp.status_code == 200:
             data = resp.json()
             return data.get("display_name")
