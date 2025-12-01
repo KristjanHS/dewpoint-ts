@@ -65,7 +65,7 @@ export async function GET(req: Request) {
   const coordLon = weather?.coord?.lon;
 
   let forecast: any = null;
-  let picked: { sixHour?: ForecastPoint; twelveHour?: ForecastPoint } = {};
+  let picked: { sixHour?: ForecastPoint | null; twelveHour?: ForecastPoint | null } = {};
 
   if (coordLat != null && coordLon != null) {
     const forecastUrl = `${BASE}/forecast?lat=${coordLat}&lon=${coordLon}&units=metric&appid=${apiKey}`;

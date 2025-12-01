@@ -307,7 +307,7 @@ export default function Page() {
                 {
                   x: [outdoorTemp],
                   y: [outdoorRh],
-                  mode: "markers+text",
+                  mode: "text+markers",
                   marker: { color: "#0ea5e9", size: 12 },
                   text: ["Outdoor"],
                   textposition: "top center",
@@ -316,7 +316,7 @@ export default function Page() {
                 {
                   x: [indoorTemp],
                   y: [indoorRh],
-                  mode: "markers+text",
+                  mode: "text+markers",
                   marker: { color: "#f97316", size: 12 },
                   text: ["Indoor"],
                   textposition: "top center",
@@ -328,8 +328,8 @@ export default function Page() {
                 paper_bgcolor: "rgba(0,0,0,0)",
                 plot_bgcolor: "rgba(0,0,0,0)",
                 margin: { t: 20, r: 10, b: 50, l: 50 },
-                xaxis: { title: "Temperature (°C)" },
-                yaxis: { title: "Relative humidity (%)" },
+                xaxis: { title: { text: "Temperature (°C)" } },
+                yaxis: { title: { text: "Relative humidity (%)" } },
                 legend: { orientation: "h", y: -0.2 }
               }}
               style={{ width: "100%", height: 360 }}
