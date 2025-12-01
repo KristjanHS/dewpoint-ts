@@ -60,7 +60,8 @@ data/
 assets/
 *.csv
 # If they are large datasets
-*.json
+# *.json  # Don't ignore all JSON - we need package.json, tsconfig.json, etc.
+data/**/*.json
 *.log
 faiss_index/
 
