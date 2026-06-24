@@ -92,11 +92,17 @@ vitest.setup.ts
 
 - `*.test.ts` for logic/route tests; `*.test.tsx` for component tests.
 - Only the `.tsx` component file carries the `// @vitest-environment jsdom` docblock.
-- `tsconfig.json` already globs `**/*.ts(x)`, so test files are typechecked by the gate's
-  `tsc` step for free — no separate test tsconfig.
-- **ESLint caveat:** `next lint` may flag test-only patterns. Confirm the existing config
-  tolerates `*.test.ts` during implementation; only touch it if a real warning appears
-  (the gate requires zero lint warnings).
+- **Typecheck gotcha (must do before step 1):** `tsconfig.json` has `"types": ["node"]`, so
+  `tsc` won't know the Vitest globals (`vi`, `describe`, `expect`) that `globals: true` injects
+  at runtime — every test file would error under the gate's `tsc --noEmit` step. Add
+  `"vitest/globals"` to the `tsconfig.json` `types` array (the app code doesn't import these, so a
+  single shared tsconfig is fine — no separate test tsconfig needed). With that added, the existing
+  `**/*.ts(x)` glob typechecks test files for free.
+- **ESLint caveat:** `.eslintrc.json` extends only `next/core-web-vitals`, which won't flag
+  `describe`/`it`/`expect`. The one real risk is `@typescript-eslint/no-explicit-any` (bundled in
+  that config) firing on `vi.fn<any>()` patterns in route stubs — type the stubs concretely rather
+  than reaching for `any`. Only touch the eslint config if a genuine warning appears (the gate
+  requires zero warnings).
 
 ## Route-test mechanics (no network, no real keys)
 
@@ -111,15 +117,29 @@ Three seams to control per test:
 2. **`process.env.OPENWEATHER_API_KEY`** — `vi.stubEnv(...)` / `vi.unstubAllEnvs()` to hit the
    missing-key branch deterministically.
 3. **Response** — `NextResponse.json()` returns a `Response`; assert `res.status` and
-   `await res.json()`.
+   `await res.json()`. **Risk to confirm first:** `NextResponse` (from `next/server`) running
+   outside the Next server runtime is not a documented guarantee. Before writing all four weather
+   branches, step 3 must open with a one-line smoke check (`await NextResponse.json({})` resolves
+   cleanly under Vitest's node env). If it doesn't, add a thin `vi.mock('next/server', ...)` shim.
+   Resolve this at the top of step 3, not mid-suite.
 
 **Time:** `pickClosestForecast` uses `Date.now()`. The happy path uses `vi.useFakeTimers()`
 + `vi.setSystemTime(...)` with forecast `dt` values built relative to the fixed clock, so the
 "closest to +6h/+12h" assertion is stable.
 
 **XML routes (`humidity`/`beach`):** same `fetch` stub, but the mocked response returns an XML
-**string** via `.text()`, which `xml2js` parses; the test feeds realistic XML and asserts the
-parsed shape.
+**string** via `.text()`, which `xml2js` parses (`parseStringPromise`, confirmed in both routes).
+The test feeds realistic XML and asserts on the **route handler's JSON output shape** (the
+`NextResponse` body), not the intermediate `parsed` object — `parseStringPromise` returns `any`,
+so assertions there aren't type-checked.
+
+**`humidity` is NOT a simple "follow the weather template" case.** `app/api/humidity/route.ts`
+runs a `for (hourOffset = 0; hourOffset < 4; hourOffset++)` loop that calls `fetch` repeatedly,
+walking back hour-by-hour until a fetch yields usable data. The stub must therefore model the
+sequence — e.g. `vi.fn()` with `.mockResolvedValueOnce(...)` returning empty/non-OK for the first
+N calls then populated XML — and a test should cover both "first hour has data" and "falls back to
+a later hour." Budget this as its own design beat when the humidity/beach tests come up, after the
+weather pattern is proven.
 
 ### Weather route — branches to cover (template for the others)
 - Missing API key → `500 { error: "Missing OPENWEATHER_API_KEY" }`
@@ -137,10 +157,24 @@ Each step is a standalone commit (recoverable if interrupted):
    humidities, values rounded to 1 dp). Proves the config on the simplest target.
 2. **`lib/geo.test.ts`** — `haversine` vs a known city-pair distance; `dmsToDecimal`;
    `degToCompass` boundaries (0°→N, 360° wrap); `findNearestStation` incl. empty-array → `null`.
+   ⚠️ **This step surfaces a real production bug.** `degToCompass` uses `Math.round((deg / 45) % 8)`
+   — the `% 8` is applied *before* rounding, so any bearing in `[337.5, 360)` rounds `7.5 → 8` and
+   returns `dirs[8]` = `undefined`. The boundary test (`degToCompass(337.5)`) will (correctly) fail
+   against the current code. **Fix `geo.ts` to `Math.round(deg / 45) % 8` in the same commit** — do
+   not treat the red test as a framework problem and skip it. (Pre-existing defect; the test layer
+   is doing its job by catching it.)
 3. **`app/api/weather/route.test.ts`** — the four branches above, with fetch/env/time stubs.
+   Open with the `NextResponse` smoke check noted in route-test mechanics.
 4. **`app/page.test.tsx`** — jsdom + RTL smoke test: renders, shows expected static text/controls.
-   **Plotly is mocked** (`vi.mock`) — heavy canvas/WebGL lib that doesn't render meaningfully in
-   jsdom and only adds flake.
+   **Plotly mock — mock the right layer.** `app/page.tsx` loads the chart via
+   `const Plot = dynamic(() => import("react-plotly.js"), { ssr: false })`. A bare
+   `vi.mock('react-plotly.js')` mocks the npm package but **not** the `next/dynamic` wrapper, which
+   under jsdom (no Next runtime) renders `null` or throws — the test wouldn't see the mock. Pick one:
+   (a) `vi.mock('next/dynamic', ...)` returning a loader that synchronously renders a stub component;
+   or (b) extract the `<Plot>` JSX into a small `PlotWrapper.tsx` and `vi.mock` that. Prefer (a) — no
+   production refactor. Resolve this concretely before writing the test; it's the most likely step to
+   stall. Reason for mocking at all: Plotly is a heavy canvas/WebGL lib that doesn't render
+   meaningfully in jsdom and only adds flake — we assert our wiring, not the chart.
 
 `humidity`/`beach` route tests follow the weather template once the pattern is proven.
 
@@ -150,6 +184,26 @@ Each step is a standalone commit (recoverable if interrupted):
 2. **One config + per-file docblock (A), not a projects split (B)** — least machinery that still
    separates node/jsdom; aligned with the small-app rules; cheap to migrate later if the suite grows.
 3. **Co-located tests** — better readability at this size than a parallel test tree.
-4. **Mock Plotly in component tests** — we assert our wiring, not the chart library's output.
+4. **Mock Plotly at the `next/dynamic` layer** (not the `react-plotly.js` package) — the chart is
+   dynamically imported, so the wrapper is what must be stubbed. We assert our wiring, not the chart.
 5. **Fake timers for the forecast-picker happy path** — determinism over a real clock.
 6. **`test` joins the verification gate before `build`** — fast feedback ahead of the slow step.
+
+## Review corrections (2026-06-24, post-design architecture review)
+
+A fresh-eyes architecture review (Next.js App Router + small-app lenses) ran against this doc
+before implementation. Findings folded in above:
+
+- **[was BLOCKER] Plotly mock targeted the wrong layer** — page uses `next/dynamic`; mock that, or
+  extract a `PlotWrapper`. Resolved in route-test mechanics + step 4 + decision 4.
+- **[was BLOCKER] `degToCompass` production bug** — `Math.round((deg/45) % 8)` returns `undefined`
+  for `[337.5, 360)`. Step 2 now flags the expected red test and mandates fixing `geo.ts` in the
+  same commit.
+- **[was SHOULD-FIX] tsconfig `types: ["node"]`** — Vitest globals wouldn't typecheck; add
+  `"vitest/globals"`. Corrected the earlier "typechecked for free" claim.
+- **[was SHOULD-FIX] `NextResponse` outside the Next runtime** — added a smoke check at the top of
+  step 3.
+- **[was SHOULD-FIX] `humidity` multi-fetch loop** — documented the sequential-stub requirement;
+  it's not a simple weather-template clone.
+- ESLint `no-explicit-any` on `vi.fn<any>()` and the `@vitejs/plugin-react`-is-Vitest-only note
+  captured as caveats.
