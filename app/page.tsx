@@ -159,6 +159,10 @@ export default function Page() {
   const outdoorDew = useMemo(() => dewPoint(outdoorTemp, outdoorRh), [outdoorTemp, outdoorRh]);
 
   const grid = useMemo(() => dewPointGrid(), []);
+  const zRange = useMemo(() => {
+    const flat = grid.grid.flat();
+    return { min: Math.min(...flat), max: Math.max(...flat) };
+  }, [grid]);
 
   return (
     <div className="container">
@@ -306,7 +310,19 @@ export default function Page() {
                   x: grid.temperatures,
                   y: grid.humidities,
                   type: "heatmap",
-                  colorscale: "YlGnBu",
+                  zmin: zRange.min,
+                  zmax: zRange.max,
+                  colorscale: [
+                    [0, "#134e4a"],
+                    [0.33, "#0e7490"],
+                    [0.66, "#0ea5e9"],
+                    [1, "#67e8f9"]
+                  ],
+                  colorbar: {
+                    title: { text: "Dew (°C)", font: { color: "#e2e8f0" } },
+                    tickfont: { color: "#e2e8f0" },
+                    outlinewidth: 0
+                  },
                   hovertemplate: "Temp %{x}°C<br>RH %{y}%<br>Dew %{z}°C<extra></extra>"
                 },
                 {
@@ -330,6 +346,7 @@ export default function Page() {
               ]}
               layout={{
                 autosize: true,
+                font: { color: "#e2e8f0" },
                 paper_bgcolor: "rgba(0,0,0,0)",
                 plot_bgcolor: "rgba(0,0,0,0)",
                 margin: { t: 20, r: 10, b: 50, l: 50 },
