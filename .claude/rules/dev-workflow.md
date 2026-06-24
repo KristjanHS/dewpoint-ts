@@ -11,14 +11,15 @@ last_verified: 2026-06-24
 Stack: Next.js 15 (App Router, `app/`), React 18, TypeScript 5.7 (`strict`, `noEmit`). Package manager: **npm** (`package-lock.json`; Vercel `installCommand` is `npm install`). Deploy: Vercel (`framework: nextjs`, output `.next`).
 
 ## Verification gate
-No test runner is configured. The verification gate before committing is **typecheck + lint + build**, in this order:
+The verification gate before committing is **typecheck + lint + test + build**, in this order:
 1. `npx tsc --noEmit` — `tsconfig` sets `noEmit`, so `tsc` is the typecheck, not a build. Must be clean.
 2. `npm run lint` — runs `next lint` (ESLint 9 + `eslint-config-next`). Must report no warnings or errors.
-3. `npm run build` (`next build`) — only when touching routing, server components, config, or build-time behavior; it's the slowest and catches what 1–2 miss.
+3. `npm test` (`vitest run`) — co-located `*.test.ts(x)`; fast feedback before the slow build.
+4. `npm run build` (`next build`) — only when touching routing, server components, config, or build-time behavior; it's the slowest and catches what 1–3 miss.
 
 Run each once per step. Don't re-run to "confirm" a clean result.
 
-If you add tests, prefer **Vitest** (Vite-native, ESM-friendly) and add a `test` script + this gate — don't reach for Jest in a Next 15 / ESM project.
+Test runner is **Vitest** (config `vitest.config.ts`, default `environment: 'node'`; jsdom via per-file `// @vitest-environment jsdom` docblock). `tsconfig` `types` includes `"vitest/globals"`. Design: `docs/plans/2026-06-24-test-framework-design.md`.
 
 ## Linting caveat
 `next lint` is **deprecated** and removed in Next.js 16. When the Next major bumps, migrate to the ESLint CLI via `npx @next/codemod@canary next-lint-to-eslint-cli .` and update the `lint` script. Don't add a parallel lint path before then.
