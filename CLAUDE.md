@@ -7,7 +7,7 @@ Project conventions live in `.claude/rules/` (path-gated — auto-load when matc
 
 | Rule (`.claude/rules/`) | Topic |
 |---|---|
-| `dev-workflow.md` | Verification gate (tsc → lint → build), npm, Vercel, Python-legacy boundary |
+| `dev-workflow.md` | Verification gate (tsc → lint → build), npm, Vercel, TS-only (Python residue removed) |
 | `api-routes.md` | App Router weather-proxy `GET` handlers (`dynamic`, fetch headers, error shape, `xml2js` typing) |
 | `plan-hygiene.md` | When to write/archive plan & doc files |
 | `rule-authoring.md` | Copy the shipped form verbatim when documenting a fix |
