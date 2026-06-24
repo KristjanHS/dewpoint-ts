@@ -27,7 +27,7 @@ If you add tests, prefer **Vitest** (Vite-native, ESM-friendly) and add a `test`
 `npm run dev` (`next dev`). For a one-shot check that the app renders, prefer `npx tsc --noEmit` + `npm run build` over leaving a dev server running — the build surfaces RSC/route errors without a live server.
 
 ## Python legacy
-`python_legacy/`, `.venv/`, `.flake8`, and `.pre-commit-config.yaml` are **migration leftovers** from the pre-TS app. Don't edit, lint, or wire them into the build — they are not part of the shipped Next.js app. If a task is genuinely Python-side, confirm scope with the user first (the live app is TS).
+The pre-TS migration residue (`python_legacy/`, `.flake8`, `.pre-commit-config.yaml`, the Python CI workflow, stale `*.code-workspace` files, local `.venv/`) was removed 2026-06-24. This is a TypeScript-only app. If a task is ever genuinely Python-side, confirm scope with the user first.
 
 ## tsconfig hygiene
 `exclude` lists `src/app.backup` / `src/lib.backup`, which don't exist (live code is `app/` and `lib/` at root, not `src/`). Leave stale excludes alone unless cleaning them is the task — they're inert. Don't add new `.backup` dirs; delete dead code instead of shadowing it.

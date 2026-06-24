@@ -14,6 +14,3 @@ Project conventions live in `.claude/rules/` (path-gated — auto-load when matc
 
 ## Other AI agents
 Other agents (Gemini Code Assist via `.gemini/config.yaml`, anything honoring `.aiignore`) defer to the rules in `.claude/rules/` as the single source of truth. Keep their configs lean — do not copy rule text into them.
-
-## Legacy
-`python_legacy/`, `.venv/`, `.flake8`, `.pre-commit-config.yaml`, and `.github/workflows/python-lint-test.yml` are pre-TS migration leftovers, not part of the shipped app. Don't wire them into the build.
