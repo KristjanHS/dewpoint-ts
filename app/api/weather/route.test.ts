@@ -1,4 +1,3 @@
-import { afterEach, beforeEach } from "vitest";
 import { GET } from "./route";
 
 // NextResponse.json() resolves cleanly under Vitest's node env (smoke-checked),
@@ -24,6 +23,7 @@ function req(query: string): Request {
 
 afterEach(() => {
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
   vi.unstubAllEnvs();
   vi.useRealTimers();
 });

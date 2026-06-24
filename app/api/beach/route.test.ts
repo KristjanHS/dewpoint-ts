@@ -33,6 +33,7 @@ function req(query: string): Request {
 
 afterEach(() => {
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 });
 
 describe("GET /api/beach", () => {
