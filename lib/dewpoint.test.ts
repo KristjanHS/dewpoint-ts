@@ -28,6 +28,19 @@ describe("recommendation", () => {
       "Dew points are close. Ventilation change has minor impact."
     );
   });
+
+  // Boundaries are strict (> 2, < -2), so diff of exactly +/-2 is "close".
+  it("treats diff of exactly +2 as close, not a ventilation trigger", () => {
+    expect(recommendation(12, 10)).toBe(
+      "Dew points are close. Ventilation change has minor impact."
+    );
+  });
+
+  it("treats diff of exactly -2 as close, not a moisture warning", () => {
+    expect(recommendation(10, 12)).toBe(
+      "Dew points are close. Ventilation change has minor impact."
+    );
+  });
 });
 
 describe("dewPointGrid", () => {
