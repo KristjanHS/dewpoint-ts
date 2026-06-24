@@ -45,7 +45,7 @@ export function dmsToDecimal(deg: number, min: number, sec: number): number {
  */
 export function degToCompass(deg: number): string {
   const dirs = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
-  const ix = Math.round((deg / 45) % 8);
+  const ix = Math.round(deg / 45) % 8;
   return dirs[ix];
 }
 
