@@ -1,0 +1,34 @@
+# Build artifacts
+.next/
+out/
+tsconfig.tsbuildinfo
+node_modules/
+
+# Lockfile (large, low signal to read)
+package-lock.json
+
+# Sibling AI-tool configs (tracked, but Claude reads CLAUDE.md + .claude/rules/)
+.codex/
+.cursor/
+.gemini/
+.aiignore
+AGENTS.md
+GEMINI.md
+
+# Python migration residue (pre-TS app, not part of the shipped build)
+python_legacy/
+.venv/
+__pycache__/
+.pytest_cache/
+.flake8
+
+# Archived docs / one-off session outputs
+docs/plans/archive/
+docs/analysis/
+
+# Notebooks
+*.ipynb
+
+# Windows scripts (WSL interop disabled)
+*.bat
+*.cmd
