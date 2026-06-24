@@ -109,8 +109,8 @@ export default function Page() {
       }
       setForecastSix(json.picked?.sixHour || null);
       setForecastTwelve(json.picked?.twelveHour || null);
-    } catch (err: any) {
-      setError(err.message || "Unable to fetch weather");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to fetch weather");
     } finally {
       setLoading(false);
     }
@@ -119,27 +119,32 @@ export default function Page() {
   async function fetchEstonianData() {
     if (!geo) return;
 
-    // Fetch beach data
-    try {
-      const beachRes = await fetch(`/api/beach?lat=${geo.lat}&lon=${geo.lon}`);
-      if (beachRes.ok) {
-        const beachJson = await beachRes.json();
-        setBeachData(beachJson.nearest || null);
+    const fetchBeach = async () => {
+      try {
+        const beachRes = await fetch(`/api/beach?lat=${geo.lat}&lon=${geo.lon}`);
+        if (beachRes.ok) {
+          const beachJson = await beachRes.json();
+          setBeachData(beachJson.nearest || null);
+        }
+      } catch (err) {
+        console.error("Beach data fetch failed:", err);
       }
-    } catch (err) {
-      console.error("Beach data fetch failed:", err);
-    }
+    };
 
-    // Fetch humidity data
-    try {
-      const humidityRes = await fetch(`/api/humidity?lat=${geo.lat}&lon=${geo.lon}`);
-      if (humidityRes.ok) {
-        const humidityJson = await humidityRes.json();
-        setHumidityData(humidityJson.nearest || null);
+    const fetchHumidity = async () => {
+      try {
+        const humidityRes = await fetch(`/api/humidity?lat=${geo.lat}&lon=${geo.lon}`);
+        if (humidityRes.ok) {
+          const humidityJson = await humidityRes.json();
+          setHumidityData(humidityJson.nearest || null);
+        }
+      } catch (err) {
+        console.error("Humidity data fetch failed:", err);
       }
-    } catch (err) {
-      console.error("Humidity data fetch failed:", err);
-    }
+    };
+
+    // Independent endpoints — fetch in parallel
+    await Promise.all([fetchBeach(), fetchHumidity()]);
   }
 
   useEffect(() => {
