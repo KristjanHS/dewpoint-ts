@@ -76,6 +76,7 @@ secrets.*
 # Node / Next.js
 node_modules/
 .next/
+tsconfig.tsbuildinfo
 *.log
 npm-debug.log*
 pnpm-debug.log*
