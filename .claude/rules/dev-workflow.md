@@ -19,7 +19,7 @@ The verification gate before committing is **typecheck + lint + test + build**, 
 
 Run each once per step. Don't re-run to "confirm" a clean result.
 
-Test runner is **Vitest** (config `vitest.config.ts`, default `environment: 'node'`; jsdom via per-file `// @vitest-environment jsdom` docblock). `tsconfig` `types` includes `"vitest/globals"`. Design: `docs/plans/2026-06-24-test-framework-design.md`.
+Test runner is **Vitest** (config `vitest.config.ts`, default `environment: 'node'`; jsdom via per-file `// @vitest-environment jsdom` docblock). `tsconfig` `types` includes `"vitest/globals"`. Design: `docs/plans/archive/2026-06-24-test-framework-design.md`.
 
 ## Linting caveat
 `next lint` is **deprecated** and removed in Next.js 16. When the Next major bumps, migrate to the ESLint CLI via `npx @next/codemod@canary next-lint-to-eslint-cli .` and update the `lint` script. Don't add a parallel lint path before then.
