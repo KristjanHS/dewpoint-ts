@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(**/*.ipynb)",
+      "Read(**/.next/**)",
+      "Read(**/out/**)",
+      "Read(**/tsconfig.tsbuildinfo)",
+      "Read(**/node_modules/**)",
+      "Read(**/package-lock.json)",
+      "Read(**/.codex/**)",
+      "Read(**/.cursor/**)",
+      "Read(**/.gemini/**)",
+      "Read(**/.aiignore)",
+      "Read(**/AGENTS.md)",
+      "Read(**/GEMINI.md)",
+      "Read(**/python_legacy/**)",
+      "Read(**/.venv/**)",
+      "Read(**/__pycache__/**)",
+      "Read(**/.pytest_cache/**)",
+      "Read(**/.flake8)",
+      "Read(./docs/plans/archive/**)",
+      "Read(./docs/analysis/**)",
+      "Read(**/*.bat)",
+      "Read(**/*.cmd)"
+    ]
+  }
+}
