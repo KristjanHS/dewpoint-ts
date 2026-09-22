@@ -18,7 +18,6 @@
       "Read(**/__pycache__/**)",
       "Read(**/.pytest_cache/**)",
       "Read(**/.flake8)",
-      "Read(./docs/plans/archive/**)",
       "Read(./docs/analysis/**)",
       "Read(**/*.bat)",
       "Read(**/*.cmd)"
