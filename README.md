@@ -1,13 +1,13 @@
 # Dew Point Advisor
 
-Compare indoor vs outdoor dew points to decide when to ventilate. Uses OpenWeather for live data and forecasts.
+Compare indoor vs outdoor dew points to decide when to ventilate. Uses OpenWeather for live data and forecasts, plus Estonian weather-station data.
 
 **Live:** [https://dewpoint-ts.vercel.app](https://dewpoint-ts.vercel.app)
 
 ![Dew Point Advisor screenshot](docs/screenshot.png)
 
 ## Quickstart
-1) Install deps (Node 18+):
+1) Install deps (Node 20.19+):
 ```bash
 npm install
 ```
@@ -42,6 +42,8 @@ npm test
 ## How it was built
 
 <!-- TODO: one hand-written paragraph -->
+
+Method and agent configuration: [claudeconf](https://github.com/KristjanHS/claudeconf).
 
 ## License
 
