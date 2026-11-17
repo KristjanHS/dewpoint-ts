@@ -41,8 +41,6 @@ npm test
 
 ## How it was built
 
-<!-- TODO: one hand-written paragraph -->
-
 Method and agent configuration: [claudeconf](https://github.com/KristjanHS/claudeconf).
 
 ## License
